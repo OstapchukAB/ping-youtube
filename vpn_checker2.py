@@ -37,9 +37,9 @@ class VPNCheckerApp:
                                          bg="#2196F3", fg="white", font=("Arial", 10), width=18)
         self.btn_start_v2ray.pack(side="left", padx=5)
 
-        self.btn_stop_v2ray = tk.Button(btn_frame, text="Выключить v2rayN", command=self.stop_v2ray, 
-                                        bg="#f44336", fg="white", font=("Arial", 10), width=18, state="disabled")
-        self.btn_stop_v2ray.pack(side="left", padx=5)
+        #self.btn_stop_v2ray = tk.Button(btn_frame, text="Выключить v2rayN", command=self.stop_v2ray, 
+         #                               bg="#f44336", fg="white", font=("Arial", 10), width=18, state="disabled")
+        #self.btn_stop_v2ray.pack(side="left", padx=5)
 
         # --- Заголовок проверки доступа ---
         tk.Label(root, text="Статус доступа", font=("Arial", 14, "bold")).pack(pady=(10, 0))
@@ -95,61 +95,48 @@ class VPNCheckerApp:
         if self.is_v2rayn_running():
             self.v2ray_status_label.config(text="Статус: Работает (в трее)", fg="green")
             self.btn_start_v2ray.config(state="disabled")
-            self.btn_stop_v2ray.config(state="normal")
+            #self.btn_stop_v2ray.config(state="normal")
         else:
             self.v2ray_status_label.config(text="Статус: Не запущен", fg="red")
             self.btn_start_v2ray.config(state="normal")
-            self.btn_stop_v2ray.config(state="disabled")
+            #self.btn_stop_v2ray.config(state="disabled")
 
     def start_v2ray(self):
-        """Запускает v2rayN в свернутом виде (в трей)."""
         if self.is_v2rayn_running():
             self.update_v2ray_ui()
             return
-
         if not os.path.exists(V2RAYN_PATH):
             self.status_label.config(text=f"Ошибка: v2rayN.exe не найден по пути {V2RAYN_PATH}")
             return
-
         try:
-            DETACHED_PROCESS = 0x00000008
-            CREATE_NEW_PROCESS_GROUP = 0x00000200
-            
-            # Запускаем с параметром --tray для старта в трее
-            subprocess.Popen(
-            [V2RAYN_PATH, "--tray"],
-            creationflags= DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP,
-            stdin=subprocess.DEVNULL,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            close_fds=True,
-        )
-
+            os.startfile(V2RAYN_PATH, arguments="--tray")
             self.status_label.config(text="Запуск v2rayN...")
-            # Даем программе немного времени на инициализацию
             self.root.after(2000, self.update_v2ray_ui)
         except Exception as e:
             self.status_label.config(text=f"Ошибка запуска: {e}")
 
-    def stop_v2ray(self):
-        """Завершает процесс v2rayN."""
-        if not self.is_v2rayn_running():
-            self.update_v2ray_ui()
-            return
+    # def stop_v2ray(self):
+    #     """Завершает процесс v2rayN."""
+    #     if not self.is_v2rayn_running():
+    #         self.update_v2ray_ui()
+    #         return
 
-        self.status_label.config(text="Выключение v2rayN...")
-        for proc in psutil.process_iter(['name']):
-            try:
-                if proc.info['name'] and proc.info['name'].lower() == 'v2rayn.exe':
-                    proc.terminate()  # Мягкое завершение
-            except (psutil.NoSuchProcess, psutil.AccessDenied):
-                pass
+    #     self.status_label.config(text="Выключение v2rayN...")
+    #     for proc in psutil.process_iter(['name']):
+    #         try:
+    #             if proc.info['name'] and proc.info['name'].lower() == 'v2rayn.exe':
+    #                 proc.terminate()  # Мягкое завершение
+    #         except (psutil.NoSuchProcess, psutil.AccessDenied):
+    #             pass
         
-        # Даем время на завершение и обновляем интерфейс
-        self.root.after(1500, self.update_v2ray_ui)
+    #     # Даем время на завершение и обновляем интерфейс
+    #     self.root.after(1500, self.update_v2ray_ui)
 
     # --- Логика проверки доступа (без изменений) ---
     def get_system_proxy(self):
+        # Проверми что vpn Прога запущена
+        self.update_v2ray_ui()
+
         """Читает настройки системного прокси из реестра Windows."""
         try:
             key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, 
