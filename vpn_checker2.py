@@ -9,10 +9,9 @@ import psutil
 import time
 
 # --- НАСТРОЙКИ ---
-# Укажите полный путь к v2rayN.exe на вашем компьютере
 
 DESCTOP_PATH = os.path.join(os.environ['USERPROFILE'], 'Desktop')
-V2RAYN_PATH = DESCTOP_PATH + r"\v2rayN-windows-64-With-Core\v2rayN-windows-64\v2rayN.exe"  # <-- ИЗМЕНИТЕ ЭТОТ ПУТЬ
+V2RAYN_PATH = DESCTOP_PATH + r"\v2rayN-windows-64-With-Core\v2rayN-windows-64\v2rayN.exe"  
 # -----------------
 
 class VPNCheckerApp:
